@@ -21,5 +21,7 @@ from myapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ping/', views.ping, name='ping'),
+    path('json-data/', views.get_json_data_view, name='get_json_data'),
+
 
 ]
