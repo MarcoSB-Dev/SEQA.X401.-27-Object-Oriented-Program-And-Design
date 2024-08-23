@@ -1,31 +1,65 @@
-import React, { useState } from 'react';
 import axios from 'axios';
+import axiosInstance from './axiosInstance.jsx'; // Ensure this path is correct
+import axiosInstanceNoCredentials from './axiosInstanceNoCredentials.jsx'; // Correct path and extension
+import { useState, useEffect } from 'react';
 
-const App = () => {
-    const [message, setMessage] = useState('');
+function App() {
+  const [product, setProduct] = useState([]);
+  const [responseMessage, setResponseMessage] = useState('');
 
-    const pingBackend = () => {
-        axios.get('http://localhost:4000/ping/') // Use the full URL
-            .then(response => {
-                console.log('Response data:', response.data); // Log the entire response data
-                if (response.data && response.data.message) {
-                    setMessage(response.data.message);
-                    console.log('Message:', response.data.message);
-                } else {
-                    console.error('Message field is missing in the response');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    };
+  useEffect(() => {
+    axiosInstanceNoCredentials.get('/products')
+      .then(response => {
+        console.log('API response:', response);
+        setProduct(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching products:', error);
+      });
+  }, []);
 
-    return (
-        <div>
-            <button onClick={pingBackend}>Ping</button>
-            <p>{message}</p>
+  const addToCart = async (productObj) => {
+    try {
+      console.log(productObj);
+      const response = await axios.post('http://127.0.0.1:4000/add-to-cart/', {
+        product_id: productObj.product.id,
+        quantity: 1,
+        description: productObj.product.description,
+        category: productObj.product.category,
+        price: productObj.product.price,
+        image: productObj.product.image,
+        title: productObj.product.title,
+        rating: productObj.product.rating,
+      }, {
+        withCredentials: true,
+      });
+
+      console.log(response.data);
+      setResponseMessage(response.data.message);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      setResponseMessage('Error adding to cart');
+    }
+  };
+
+  return (
+    <div className='product-container'>
+      {responseMessage && (
+        <div className='response-message'>
+          {responseMessage}
         </div>
-    );
-};
+      )}
+
+      {product.map((product) => (
+        <div className='product-individual-container' key={product.id}>
+          <h3>{product.title}</h3>
+          <img src={`${product.image}`} alt="" className='product-image' />
+          <p>{product.description}</p>
+          <button onClick={() => addToCart({product})}>Add to Cart</button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default App;

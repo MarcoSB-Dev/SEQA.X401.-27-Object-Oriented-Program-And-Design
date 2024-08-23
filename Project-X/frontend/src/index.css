@@ -1,0 +1,23 @@
+.product-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap; /* Ensure wrapping is enabled */
+    margin-top: 20px;
+}
+
+.product-individual-container {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #c0c0c0;
+    border-radius: 5px;
+    flex: 1 1 calc(16.66% - 20px); /* Adjust width to fit 6 items per row, accounting for margins */
+    max-width: calc(16.66% - 20px); /* Ensure max-width matches the flex-basis */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.product-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
